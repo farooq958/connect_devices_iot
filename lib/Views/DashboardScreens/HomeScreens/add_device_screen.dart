@@ -1,8 +1,16 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:veevo_connect/Controllers/AppUri/app_uri.dart';
+import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/registerController.dart';
+import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/register_cubit.dart';
 import 'package:veevo_connect/Controllers/app_controllers.dart';
 import 'package:veevo_connect/Views/Utils/Data/app_colors.dart';
+import 'package:veevo_connect/Views/Utils/Data/utils.dart';
 
 class AddDeviceScreen extends StatelessWidget {
   const AddDeviceScreen({Key? key}) : super(key: key);
@@ -13,7 +21,33 @@ class AddDeviceScreen extends StatelessWidget {
       height: 1.sh,
       width: 1.sw,
       color: AppColors.white,
-      child: ListView(
+      child: BlocListener<RegisterCubit, RegisterState>(
+  listener: (context, state) {
+    // TODO: implement listener
+    if(state is RegisterSuccess)
+      {
+        Utils.showSnackBar(context: context, message:registerDeviceController.message, status: registerDeviceController.status );
+if(registerDeviceController.status != "error")
+  {
+AppControllers.addNewDeviceDeviceNameController.clear();
+AppControllers.addNewDeviceDeviceIdController.clear();
+AppControllers.addNewDeviceDeviceLongController.clear();
+AppControllers.addNewDeviceDeviceLatController.clear();
+  }
+      }
+
+    if(state is RegisterInternetError)
+    {
+      Utils.showSnackBar(context: context, message:"No Internet Please connect to Internet", status: "Error" );
+
+    }
+    if(state is RegisterInternetError)
+    {
+      Utils.showSnackBar(context: context, message:"Unknown Error", status: "Error" );
+
+    }
+  },
+  child: ListView(
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
@@ -78,7 +112,8 @@ class AddDeviceScreen extends StatelessWidget {
             width: 38.sp,
             margin: EdgeInsets.symmetric(horizontal: 30.sp),
             color: Colors.transparent,
-            child: TextField(
+            child: TextFormField(
+              
               controller: AppControllers.addNewDeviceDeviceIdController,
               style: GoogleFonts.poppins(
                 fontSize: 12.0.sp,
@@ -116,7 +151,14 @@ class AddDeviceScreen extends StatelessWidget {
             width: 38.sp,
             margin: EdgeInsets.symmetric(horizontal: 30.sp),
             color: Colors.transparent,
-            child: TextField(
+            child: TextFormField(
+
+              validator: (value){
+                return null;
+
+
+
+              },
               controller: AppControllers.addNewDeviceDeviceNameController,
               style: GoogleFonts.poppins(
                 fontSize: 12.0.sp,
@@ -201,7 +243,9 @@ class AddDeviceScreen extends StatelessWidget {
                 //text
                 Expanded(
                   flex: 10,
-                  child: TextField(
+                  child: TextFormField(
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+
                     controller: AppControllers.addNewDeviceDeviceLongController,
                     style: GoogleFonts.poppins(
                       fontSize: 12.0.sp,
@@ -234,7 +278,8 @@ class AddDeviceScreen extends StatelessWidget {
                 const Spacer(flex: 1),
                 Expanded(
                   flex: 10,
-                  child: TextField(
+                  child: TextFormField(
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     controller: AppControllers.addNewDeviceDeviceLatController,
                     style: GoogleFonts.poppins(
                       fontSize: 12.0.sp,
@@ -275,7 +320,10 @@ class AddDeviceScreen extends StatelessWidget {
             splashColor: Colors.transparent,
             onTap: () {
               debugPrint('submit button is pressed');
-            },
+              context.read<RegisterCubit>().registerDevice(AppControllers.addNewDeviceDeviceNameController.text, AppControllers.addNewDeviceDeviceIdController.text, "63a4307cf75285ab970a4ffa", double.parse(AppControllers.addNewDeviceDeviceLongController.text) , double.parse(AppControllers.addNewDeviceDeviceLatController.text));
+            
+           
+              },
             child: Container(
               height: 26.sp,
               alignment: Alignment.center,
@@ -296,6 +344,7 @@ class AddDeviceScreen extends StatelessWidget {
           ),
         ],
       ),
+),
     );
   }
 }

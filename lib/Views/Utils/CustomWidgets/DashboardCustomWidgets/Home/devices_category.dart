@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:veevo_connect/Controllers/Cubits/DashboardCubits/HomeCubits/home_view_device_page_view_cubit.dart';
+import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/all_devices_controller.dart';
+import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/button_enable_disable_cubit.dart';
+import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/devices_cubit.dart';
+import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/edit_device_controller.dart';
+import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/edit_device_cubit.dart';
+import 'package:veevo_connect/Controllers/Cubits/set_device_favourite_controller.dart';
+import 'package:veevo_connect/Controllers/Cubits/set_device_favourite_cubit.dart';
+import 'package:veevo_connect/Controllers/Model/AllDevices/get_all_user_devices.dart';
 import 'package:veevo_connect/Controllers/app_controllers.dart';
 import 'package:veevo_connect/Views/Utils/Data/app_colors.dart';
+import 'package:veevo_connect/Views/Utils/Data/utils.dart';
 
 class DevicesCategory extends StatefulWidget {
   final String categoryState;
@@ -14,7 +25,7 @@ class DevicesCategory extends StatefulWidget {
 }
 
 enum MenuItem {
-  unFavourite,
+  Favourite,
   edit,
   delete,
 }
@@ -22,12 +33,57 @@ enum MenuItem {
 class _DevicesCategoryState extends State<DevicesCategory> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 1.sh,
-      width: 1.sw,
-      color: AppColors.white,
-      alignment: Alignment.topCenter,
-      child: ListView(
+    return BlocBuilder<HomeViewDevicePageViewCubit, int?>(
+
+      builder: (context, viewDeviceTopButtonState) {
+        return BlocListener<EditDeviceCubit, EditDeviceState>(
+  listener: (context, editState) {
+    if(editState is EditDeviceSuccess)
+      {
+        Utils.showSnackBar(context: context, message: editDeviceController.message, status: "Success");
+        context.read<AllDevicesCubit>().loadUserDevices("");
+      }
+    // TODO: implement listener
+  },
+  child: Container(
+          height: 1.sh,
+          width: 1.sw,
+          color: AppColors.white,
+          alignment: Alignment.topCenter,
+          child: BlocConsumer<SetDeviceFavouriteCubit, SetDeviceFavouriteState>(
+  listener: (context, favouriteState) {
+
+    if(favouriteState is SetDeviceFavouriteSuccess)
+    {
+      Utils.showSnackBar(context: context, message:setFavouriteDeviceController.message, status:setFavouriteDeviceController.status );
+
+    }
+
+    if(favouriteState is SetDeviceFavouriteInternetError)
+    {
+      Utils.showSnackBar(context: context, message:"No Internet Please connect to Internet", status: "Error" );
+
+    }
+    if(favouriteState is SetDeviceFavouriteUnknownError)
+    {
+      Utils.showSnackBar(context: context, message:"Unknown Error", status: "Error" );
+
+    }
+
+    // TODO: implement listener
+  },
+  builder: (context, state) {
+    return BlocConsumer<AllDevicesCubit, AllDevicesState>(
+  listener: (context, state) {
+    // TODO: implement listener
+  },
+  builder: (context, allDevicesState) {
+    if(allDevicesState is AllDevicesLoaded)
+      {
+
+
+
+     return    ListView(
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
@@ -39,6 +95,17 @@ class _DevicesCategoryState extends State<DevicesCategory> {
             color: Colors.transparent,
             padding: EdgeInsets.symmetric(horizontal: 40.65.sp),
             child: TextFormField(
+              onChanged: (value)
+              {
+
+                // if(allUserDevices.status=="error")
+                //   {
+                //     context.read<AllDevicesCubit>().loadUserDevices("");
+                //   }
+                context.read<AllDevicesCubit>().loadUserDevices(value);
+
+
+              },
               controller: AppControllers.homeTabDevicesSearchController,
               cursorColor: AppColors.themeColorOne,
               style: GoogleFonts.poppins(
@@ -83,11 +150,16 @@ class _DevicesCategoryState extends State<DevicesCategory> {
             height: 500.sp,
             width: 1.sw,
             color: AppColors.white,
-            child: ListView.separated(
+            child:
+
+            allUserDevices.status=="error"?
+            const Center(child: Text("No Device Found ")):
+            allUserDevices.userDevices.isEmpty? const Text("No Devices Available") :
+            ListView.separated(
               shrinkWrap: true,
               padding: EdgeInsets.only(bottom: 100.sp),
               physics: const BouncingScrollPhysics(),
-              itemCount: 8,
+              itemCount: allUserDevices.userDevices.length,
               separatorBuilder: (context, index) => Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.sp),
                 child: Divider(
@@ -148,10 +220,10 @@ class _DevicesCategoryState extends State<DevicesCategory> {
                                     shrinkWrap: true,
                                     padding: EdgeInsets.zero,
                                     physics:
-                                        const NeverScrollableScrollPhysics(),
+                                    const NeverScrollableScrollPhysics(),
                                     children: [
                                       Text(
-                                        'Device',
+                                        allUserDevices.userDevices[index].name,
                                         textAlign: TextAlign.left,
                                         style: GoogleFonts.poppins(
                                           color: AppColors.greyTwo,
@@ -218,9 +290,9 @@ class _DevicesCategoryState extends State<DevicesCategory> {
                                   child: ListView(
                                     shrinkWrap: true,
                                     padding:
-                                        EdgeInsets.symmetric(vertical: 10.sp),
+                                    EdgeInsets.symmetric(vertical: 10.sp),
                                     physics:
-                                        const NeverScrollableScrollPhysics(),
+                                    const NeverScrollableScrollPhysics(),
                                     children: [
                                       Text(
                                         'Off',
@@ -292,9 +364,334 @@ class _DevicesCategoryState extends State<DevicesCategory> {
                               ),
                             ),
                             onSelected: (value) {
-                              // if (value == MenuItem.myFavourite) {
-                              //   context.read<DropDownButtonCubit>().category('My Favorites');
-                              // } else if (value == MenuItem.devices) {
+//menu Item Favourite click event
+                              if (value == MenuItem.Favourite) {
+                                print("favourite selct+${allUserDevices.userDevices[index].id}");
+context.read<SetDeviceFavouriteCubit>().setDeviceFavouriteAdd(allUserDevices.userDevices[index].id);
+                              }
+                              if(value == MenuItem.edit)
+                                {
+                                  //AppControllers.editDeviceIdController.text=allUserDevices.userDevices[index].id;
+                                  AppControllers.editDeviceNameController.text=allUserDevices.userDevices[index].name;
+                                  AppControllers.editDevicePlaceIdController.text=allUserDevices.userDevices[index].placeId;
+                                  AppControllers.editDeviceLatController.text=allUserDevices.userDevices[index].latitude.numberDecimal;
+                                  AppControllers.editDeviceLongController.text=allUserDevices.userDevices[index].longitude.numberDecimal;
+                                  ///alert dialog edit device
+                         AlertDialog al=     AlertDialog(
+                           backgroundColor: AppColors.bottomNavBackground,
+                           title: Container(
+                             height: 52.sp,
+                             width: 200.sp,
+                             color: AppColors.greySeven,
+                             alignment: Alignment.center,
+                             child: FittedBox(
+                               child: Text(
+                                 'Edit Device',
+                                 style: GoogleFonts.poppins(
+                                   fontWeight: FontWeight.w600,
+                                   fontSize: 18.sp,
+                                   color: AppColors.greyTwo,
+                                 ),
+                               ),
+                             ),
+                           ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    content: Container(
+                                      width: 300.sp,
+                                      height: 1.sh/3,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        //color: Colors.white,
+                                      ),
+                                      child: ListView(
+physics: const BouncingScrollPhysics(),
+                                        children: [
+                                          // Add your content here
+                                          //device id
+                                          //   Align(
+                                          //       alignment: Alignment.topLeft,
+                                          //       child: Text("Device Id",style: GoogleFonts.poppins(fontWeight: FontWeight.w600,
+                                          //         fontSize: 14.sp,
+                                          //         color: AppColors.greyTwo,),)),
+                                          // SizedBox(height: 5.sp,),
+                                          // Container(
+                                          //   height: 50.sp,
+                                          //   width: 300.sp,
+                                          //   margin: EdgeInsets.symmetric(horizontal: 30.sp),
+                                          //   color: Colors.transparent,
+                                          //   child: TextFormField(
+                                          //
+                                          //     validator: (value){
+                                          //       return null;
+                                          //
+                                          //
+                                          //
+                                          //     },
+                                          //     controller: AppControllers.editDeviceIdController,
+                                          //     style: GoogleFonts.poppins(
+                                          //       fontSize: 12.0.sp,
+                                          //       fontWeight: FontWeight.normal,
+                                          //       color: AppColors.themeColorOne,
+                                          //     ),
+                                          //     cursorColor: AppColors.themeColorOne,
+                                          //     decoration: InputDecoration(
+                                          //       contentPadding: EdgeInsets.only(
+                                          //         top: 5.sp,
+                                          //         left: 10.sp,
+                                          //       ),
+                                          //       focusedBorder: OutlineInputBorder(
+                                          //         borderSide:
+                                          //         BorderSide(color: AppColors.themeColorOne, width: 1.sp),
+                                          //       ),
+                                          //       enabledBorder: OutlineInputBorder(
+                                          //         borderSide:
+                                          //         BorderSide(color: AppColors.lightTheme, width: 1.1.sp),
+                                          //       ),
+                                          //       hintText: 'Device id',
+                                          //       hintStyle: GoogleFonts.poppins(
+                                          //         fontSize: 12.0.sp,
+                                          //         fontStyle: FontStyle.normal,
+                                          //         color: AppColors.greyOne,
+                                          //       ),
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          // SizedBox(height: 10.sp,),
+                                          Align(
+                                              alignment: Alignment.topLeft,
+                                              child: Text("Device Place Id",style: GoogleFonts.poppins(fontWeight: FontWeight.w600,
+                                                fontSize: 14.sp,
+                                                color: AppColors.greyTwo,),)),
+                                          SizedBox(height: 5.sp,),
+                                          Container(
+                                            height: 50.sp,
+                                            width: 300.sp,
+                                            margin: EdgeInsets.symmetric(horizontal: 30.sp),
+                                            color: Colors.transparent,
+                                            child: TextFormField(
+            onChanged: (value){
+//print(value.isEmpty);
+              if(value.isEmpty)
+                {
+                  print("heree");
+                  context.read<ButtonEnableDisableCubit>().buttonVisibility(false);
+                }
+              {
+                context.read<ButtonEnableDisableCubit>().buttonVisibility(true);
+              }
+
+            },
+                                              validator: (value){
+                                                return null;
+
+
+
+                                              },
+                                              controller: AppControllers.editDevicePlaceIdController,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 12.0.sp,
+                                                fontWeight: FontWeight.normal,
+                                                color: AppColors.themeColorOne,
+                                              ),
+                                              cursorColor: AppColors.themeColorOne,
+                                              decoration: InputDecoration(
+                                                contentPadding: EdgeInsets.only(
+                                                  top: 5.sp,
+                                                  left: 10.sp,
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderSide:
+                                                  BorderSide(color: AppColors.themeColorOne, width: 1.sp),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderSide:
+                                                  BorderSide(color: AppColors.lightTheme, width: 1.1.sp),
+                                                ),
+                                                hintText: 'Place id',
+                                                hintStyle: GoogleFonts.poppins(
+                                                  fontSize: 12.0.sp,
+                                                  fontStyle: FontStyle.normal,
+                                                  color: AppColors.greyOne,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 10.sp,),
+                                          Align(
+                                              alignment: Alignment.topLeft,
+                                              child: Text("Device Name",style: GoogleFonts.poppins(fontWeight: FontWeight.w600,
+                                                fontSize: 14.sp,
+                                                color: AppColors.greyTwo,),)),
+                                          SizedBox(height: 5.sp,),
+                                          //edit device Name
+                                          Container(
+                                            height: 50.sp,
+                                            width: 300.sp,
+                                            margin: EdgeInsets.symmetric(horizontal: 30.sp),
+                                            color: Colors.transparent,
+                                            child: TextFormField(
+
+                                              validator: (value){
+                                                return null;
+
+
+
+                                              },
+                                              controller: AppControllers.editDeviceNameController,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 12.0.sp,
+                                                fontWeight: FontWeight.normal,
+                                                color: AppColors.themeColorOne,
+                                              ),
+                                              cursorColor: AppColors.themeColorOne,
+                                              decoration: InputDecoration(
+                                                contentPadding: EdgeInsets.only(
+                                                  top: 5.sp,
+                                                  left: 10.sp,
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderSide:
+                                                  BorderSide(color: AppColors.themeColorOne, width: 1.sp),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderSide:
+                                                  BorderSide(color: AppColors.lightTheme, width: 1.1.sp),
+                                                ),
+                                                hintText: 'Device name',
+                                                hintStyle: GoogleFonts.poppins(
+                                                  fontSize: 12.0.sp,
+                                                  fontStyle: FontStyle.normal,
+                                                  color: AppColors.greyOne,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 10.sp,),
+                                          Align(
+                                              alignment: Alignment.topLeft,
+                                              child: Text("Long & Latt",style: GoogleFonts.poppins(fontWeight: FontWeight.w600,
+                                                fontSize: 14.sp,
+                                                color: AppColors.greyTwo,),)),
+                                          SizedBox(height: 5.sp,),
+                                          Container(
+                                            height: 50.sp,
+                                            width: 300.sp,
+                                            margin: EdgeInsets.symmetric(horizontal: 20.sp),
+                                            padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                                            child: Row(
+                                              children: [
+                                                //text
+                                                Expanded(
+                                                  flex: 10,
+                                                  child: TextFormField(
+                                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+
+                                                    controller: AppControllers.editDeviceLongController,
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize: 12.0.sp,
+                                                      fontWeight: FontWeight.normal,
+                                                      color: AppColors.themeColorOne,
+                                                    ),
+                                                    cursorColor: AppColors.themeColorOne,
+                                                    decoration: InputDecoration(
+                                                      contentPadding: EdgeInsets.only(
+                                                        top: 5.sp,
+                                                        left: 10.sp,
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                            color: AppColors.themeColorOne, width: 1.sp),
+                                                      ),
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                            color: AppColors.lightTheme, width: 1.1.sp),
+                                                      ),
+                                                      hintText: 'Longitude',
+                                                      hintStyle: GoogleFonts.poppins(
+                                                        fontSize: 12.0.sp,
+                                                        fontStyle: FontStyle.normal,
+                                                        color: AppColors.greyOne,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const Spacer(flex: 1),
+                                                Expanded(
+                                                  flex: 10,
+                                                  child: TextFormField(
+                                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                                    controller: AppControllers.editDeviceLatController,
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize: 12.0.sp,
+                                                      fontWeight: FontWeight.normal,
+                                                      color: AppColors.themeColorOne,
+                                                    ),
+                                                    cursorColor: AppColors.themeColorOne,
+                                                    decoration: InputDecoration(
+                                                      contentPadding: EdgeInsets.only(
+                                                        top: 5.sp,
+                                                        left: 10.sp,
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                            color: AppColors.themeColorOne, width: 1.sp),
+                                                      ),
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                            color: AppColors.lightTheme, width: 1.1.sp),
+                                                      ),
+                                                      hintText: 'Latitude',
+                                                      hintStyle: GoogleFonts.poppins(
+                                                        fontSize: 12.0.sp,
+                                                        fontStyle: FontStyle.normal,
+                                                        color: AppColors.greyOne,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                           actions: [
+                             BlocBuilder<ButtonEnableDisableCubit, bool>(
+  builder: (context, buttonState) {
+   // print(buttonState);
+    return MaterialButton(
+
+                               color:buttonState==false? AppColors.greyThree:AppColors.themeColorTwo, onPressed: (){
+///EDIT LOGIC
+      ///
+      if(buttonState != false) {
+        context.read<EditDeviceCubit>().editDeviceFunc(
+            allUserDevices.userDevices[index].id,
+            AppControllers.editDevicePlaceIdController.text,
+            AppControllers.editDeviceNameController.text,
+            AppControllers.editDeviceLongController.text,
+            AppControllers.editDeviceLatController.text);
+        Navigator.pop(context);
+      }
+
+                             },child: SizedBox(width: 100.sp,height: 30.sp,child: const Center(child: Text("Submit"),),),);
+  },
+)
+
+
+                           ],
+                                  );
+                         context.read<ButtonEnableDisableCubit>().buttonVisibility(false);
+showDialog(context: context, builder: (BuildContext context){
+
+
+  return al;
+});
+
+                                }
+                              // else if (value == MenuItem.devices) {
                               //   context.read<DropDownButtonCubit>().category('Devices');
                               // } else if (value == MenuItem.places) {
                               //   context.read<DropDownButtonCubit>().category('Places');
@@ -310,7 +707,7 @@ class _DevicesCategoryState extends State<DevicesCategory> {
                             itemBuilder: (context) => [
                               //favorite
                               PopupMenuItem(
-                                value: MenuItem.unFavourite,
+                                value: MenuItem.Favourite,
                                 padding: EdgeInsets.only(left: 5.sp),
                                 height: 30.sp,
                                 textStyle: GoogleFonts.roboto(
@@ -334,7 +731,7 @@ class _DevicesCategoryState extends State<DevicesCategory> {
                                       child: Padding(
                                         padding: EdgeInsets.only(left: 2.sp),
                                         child: const Text(
-                                          'Unfavorite',
+                                          'favorite',
                                           textAlign: TextAlign.left,
                                         ),
                                       ),
@@ -433,7 +830,32 @@ class _DevicesCategoryState extends State<DevicesCategory> {
             ),
           ),
         ],
-      ),
+      );
+
+      }
+    else if (allDevicesState is AllDevicesInternetError)
+    {
+      return const Text("No Internet ,Please Check Your Internet ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 40),);
+
+    }
+    else if (allDevicesState is AllDevicesUnknownError)
+    {
+      return const Text("Unknown Error , Connection is down or refused to connect ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 40),);
+
+    }
+    else
+    {
+      return const CircularProgressIndicator();
+
+    }
+
+  },
+);
+  },
+),
+        ),
+);
+      }
     );
   }
 }

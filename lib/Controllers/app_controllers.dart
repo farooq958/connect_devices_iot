@@ -38,4 +38,14 @@ class AppControllers {
       TextEditingController();
   static final TextEditingController addNewDeviceDeviceLatController =
       TextEditingController();
+  static final TextEditingController editDeviceLatController =
+  TextEditingController();
+  static final TextEditingController editDeviceLongController =
+  TextEditingController();
+  static final TextEditingController editDeviceNameController =
+  TextEditingController();
+  // static final TextEditingController editDeviceIdController =
+  // TextEditingController();
+  static final TextEditingController editDevicePlaceIdController =
+  TextEditingController();
 }

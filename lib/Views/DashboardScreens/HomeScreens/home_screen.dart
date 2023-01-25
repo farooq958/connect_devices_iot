@@ -32,7 +32,7 @@ class HomeScreen extends StatelessWidget {
 
               //drop down button
               CustomDropDownButton(categoryState: categoryState),
-              SizedBox(height: 20.sp),
+              SizedBox(height: 21.sp),
 
               //Categories Containers
               Builder(
@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
                     return DevicesCategory(categoryState: categoryState);
                   } else if (categoryState == 'Places') {
                     return PlacesCategory(categoryState: categoryState);
-                  } else if (categoryState == 'Device Groups') {
+                  } else if (categoryState == 'DevicesGroups') {
                     return DeviceGroupsCategory(categoryState: categoryState);
                   } else {
                     return FavoriteCategoryContainer(

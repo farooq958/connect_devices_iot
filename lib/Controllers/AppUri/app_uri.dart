@@ -1,0 +1,10 @@
+String allFavouriteDeviceUri="http://172.18.0.33:2800/";
+String allPlacesUri="http://172.18.0.33:2800/get_all_places";
+String allUserDeviceUri="http://172.18.0.33:2800/get_all_user_devices";
+String devicesSearchUri="http://172.18.0.33:2800/api/search/get_user_device?device_name=";
+String registerDevices="http://172.18.0.33:2800/api/register_device";
+String setFavouriteDeviceUri="http://172.18.0.33:2800/api/add_device_to_favourites/";
+String favouriteSearchUri="http://172.18.0.33:2800/api/search/get_favourtie_device?fav_device_name=";
+String placesSearchUri="http://172.18.0.33:2800/api/search/get_place?place_name=";
+String removeFavouriteUri="http://172.18.0.33:2800/api/remove_favourite_device/";
+String editDeviceUri="http://172.18.0.33:2800/api/edit_device";

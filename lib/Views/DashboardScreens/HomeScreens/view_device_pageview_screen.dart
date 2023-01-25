@@ -9,12 +9,12 @@ import 'package:veevo_connect/Views/DashboardScreens/HomeScreens/device_manageme
 import 'package:veevo_connect/Views/Utils/Data/app_colors.dart';
 
 class ViewDevicePageViewScreen extends StatelessWidget {
-  const ViewDevicePageViewScreen({super.key});
+  final int? viewDeviceTopButtons;
+  const ViewDevicePageViewScreen({super.key,required this.viewDeviceTopButtons});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeViewDevicePageViewCubit, int?>(
-      builder: (context, viewDeviceTopButtonState) {
+
         return Container(
           height: 1.sh,
           width: 1.sw,
@@ -44,6 +44,7 @@ class ViewDevicePageViewScreen extends StatelessWidget {
                           onTap: () {
                             AppControllers.bottomNavigationBarController
                                 .jumpToPage(0);
+                            context.read<HomeViewDevicePageViewCubit>().topButtonsPageIndex(currentIndex: 0);
                           },
                           child: Icon(
                             Icons.arrow_back_ios,
@@ -96,15 +97,16 @@ class ViewDevicePageViewScreen extends StatelessWidget {
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,
                         onTap: () {
-                          AppControllers.homeViewDeviceController.jumpToPage(0);
                           context
                               .read<HomeViewDevicePageViewCubit>()
                               .topButtonsPageIndex(currentIndex: 0);
+                          AppControllers.homeViewDeviceController.jumpToPage(0);
+
                         },
                         child: Container(
                           height: 26.sp,
                           decoration: BoxDecoration(
-                            color: viewDeviceTopButtonState == 0
+                            color: viewDeviceTopButtons == 0
                                 ? AppColors.themeColorOne
                                 : AppColors.greyEleventh,
                             borderRadius: BorderRadius.circular(10.sp),
@@ -114,7 +116,7 @@ class ViewDevicePageViewScreen extends StatelessWidget {
                             child: Text(
                               'Device details',
                               style: GoogleFonts.poppins(
-                                color: viewDeviceTopButtonState == 0
+                                color: viewDeviceTopButtons == 0
                                     ? AppColors.white
                                     : AppColors.greyTwelve,
                                 fontSize: 11.sp,
@@ -135,15 +137,16 @@ class ViewDevicePageViewScreen extends StatelessWidget {
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,
                         onTap: () {
-                          AppControllers.homeViewDeviceController.jumpToPage(1);
                           context
                               .read<HomeViewDevicePageViewCubit>()
                               .topButtonsPageIndex(currentIndex: 1);
+                          AppControllers.homeViewDeviceController.jumpToPage(1);
+
                         },
                         child: Container(
                           height: 26.sp,
                           decoration: BoxDecoration(
-                            color: viewDeviceTopButtonState == 1
+                            color: viewDeviceTopButtons == 1
                                 ? AppColors.themeColorOne
                                 : AppColors.greyEleventh,
                             borderRadius: BorderRadius.circular(10.sp),
@@ -153,7 +156,7 @@ class ViewDevicePageViewScreen extends StatelessWidget {
                             child: Text(
                               'Device management',
                               style: GoogleFonts.poppins(
-                                color: viewDeviceTopButtonState == 1
+                                color: viewDeviceTopButtons == 1
                                     ? AppColors.white
                                     : AppColors.greyTwelve,
                                 fontSize: 11.sp,
@@ -194,7 +197,6 @@ class ViewDevicePageViewScreen extends StatelessWidget {
             ],
           ),
         );
-      },
-    );
+
   }
 }

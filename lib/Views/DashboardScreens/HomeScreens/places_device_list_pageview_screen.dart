@@ -44,6 +44,8 @@ class PlacesDeviceListPageViewScreen extends StatelessWidget {
                           onTap: () {
                             AppControllers.bottomNavigationBarController
                                 .jumpToPage(10);
+                            AppControllers.placesDeviceListPageViewController
+                                .jumpToPage(0);
                           },
                           child: Icon(
                             Icons.arrow_back_ios,
