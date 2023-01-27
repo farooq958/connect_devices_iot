@@ -3,7 +3,7 @@ import 'dart:convert';
 
 SetFavouriteDevice setFavouriteDeviceFromJson(String str) => SetFavouriteDevice.fromJson(json.decode(str));
 
-String registerDeviceToJson(SetFavouriteDevice data) => json.encode(data.toJson());
+String setFavouriteDeviceToJson(SetFavouriteDevice data) => json.encode(data.toJson());
 
 class SetFavouriteDevice {
   SetFavouriteDevice({

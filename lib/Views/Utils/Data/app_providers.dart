@@ -12,6 +12,7 @@ import 'package:veevo_connect/Controllers/Cubits/remove_favourite_cubit.dart';
 import 'package:veevo_connect/Controllers/Cubits/set_device_favourite_cubit.dart';
 
 import '../../../Controllers/Cubits/DevicesCubit/button_enable_disable_cubit.dart';
+import '../../../Controllers/Cubits/SwitchCubit/switch_cubit.dart';
 
 final List<BlocProvider> mainCubitProvidersList = [
   //Authentication Providers
@@ -39,4 +40,6 @@ final List<BlocProvider> mainCubitProvidersList = [
   BlocProvider<RemoveFavouriteCubit>(create: (context)=> RemoveFavouriteCubit()),
   BlocProvider<EditDeviceCubit>(create: (context)=>EditDeviceCubit()),
   BlocProvider<ButtonEnableDisableCubit>(create: (context) => ButtonEnableDisableCubit())
+  ,
+  BlocProvider<SwitchCubit>(create: (context)=>SwitchCubit())
 ];
