@@ -12,6 +12,7 @@ import 'package:veevo_connect/Controllers/Cubits/SwitchCubit/switch_cubit.dart';
 import 'package:veevo_connect/Controllers/Cubits/set_device_favourite_controller.dart';
 import 'package:veevo_connect/Controllers/Cubits/set_device_favourite_cubit.dart';
 import 'package:veevo_connect/Controllers/Model/AllDevices/get_all_user_devices.dart';
+import 'package:veevo_connect/Controllers/Repository/repo.dart';
 import 'package:veevo_connect/Controllers/app_controllers.dart';
 import 'package:veevo_connect/Views/Utils/Data/app_colors.dart';
 import 'package:veevo_connect/Views/Utils/Data/utils.dart';
@@ -242,6 +243,7 @@ class _DevicesCategoryState extends State<DevicesCategory> {
                                                   splashColor:
                                                       Colors.transparent,
                                                   onTap: () {
+                                                    Repository.deviceIdToDetails=allUserDevices.userDevices[index].id;
                                                     AppControllers
                                                         .bottomNavigationBarController
                                                         .jumpToPage(4);

@@ -8,3 +8,4 @@ String favouriteSearchUri="http://172.18.0.33:2800/api/search/get_favourtie_devi
 String placesSearchUri="http://172.18.0.33:2800/api/search/get_place?place_name=";
 String removeFavouriteUri="http://172.18.0.33:2800/api/remove_favourite_device/";
 String editDeviceUri="http://172.18.0.33:2800/api/edit_device";
+String deviceDetailUri="http://172.18.0.33:2800/api/get_device_details/";

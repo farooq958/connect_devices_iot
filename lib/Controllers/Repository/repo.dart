@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:veevo_connect/Controllers/AppUri/app_uri.dart';
+import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/DeviceDetailsCubit/deviceDetailController.dart';
 import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/all_devices_controller.dart';
 import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/edit_device_controller.dart';
 import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/registerController.dart';
@@ -12,6 +13,7 @@ import 'package:veevo_connect/Controllers/Cubits/FavouriteDeviceCubit/allfavouri
 import 'package:veevo_connect/Controllers/Cubits/PlacesCubit/allplacescontroller.dart';
 import 'package:veevo_connect/Controllers/Cubits/set_device_favourite_controller.dart';
 import 'package:veevo_connect/Controllers/Cubits/setfavouritedevice.dart';
+import 'package:veevo_connect/Controllers/Model/AllDevices/DeviceDetails/device_detail.dart';
 import 'package:veevo_connect/Controllers/Model/AllDevices/EditDevice/edit_device_model.dart';
 import 'package:veevo_connect/Controllers/Model/AllDevices/get_all_user_devices.dart';
 import 'package:veevo_connect/Controllers/Model/AllDevices/register_device.dart';
@@ -21,8 +23,8 @@ import 'package:veevo_connect/Controllers/Model/FavouriteDevices/get_all_favouri
 import '../Cubits/remove_favourite_controller.dart';
 import '../Cubits/removefavouritedevice.dart';
 class Repository{
-
-
+static String deviceIdToDetails="";
+//get all favourite devices with search
 Future<int?>  getAllFavouriteDevices(searchQuery)
   async {
 
@@ -68,7 +70,7 @@ Future<int?>  getAllFavouriteDevices(searchQuery)
 
 
   }
-
+//get all places  with search
 Future<int?>  getAllPlaces(searchQuery)
 async {
 
@@ -109,7 +111,7 @@ else{
 
 
 }
-
+//get all  devices with search
 Future<int?>  getAllDevices(String seacrhQuery)
 async {
 
@@ -150,6 +152,7 @@ else
 
 }
 
+//register device
 Future<int?>  registerDevice( {required String deviceName,required String deviceSerial,required String placeId,required double longitude,required double latitude})
 async {
 
@@ -195,6 +198,7 @@ async {
 
 }
 
+//favourite set
 Future<int?>  setFavouriteDevice( {required String id})
 async {
 
@@ -230,6 +234,7 @@ async {
 
 
 }
+//unfavourite set
 Future<int?>  removeFavouriteDevice( {required String id})
 async {
 
@@ -265,7 +270,7 @@ async {
 
 
 }
-
+//Edit device in all user device
 Future<int?>  editDevice( {required String deviceName,required String deviceId,required String placeId,required String longitude,required String latitude})
 async {
 
@@ -310,4 +315,41 @@ print("lat and long  $latitude");
 
 
 }
+
+//device Details
+  Future<int?>  detailDevice(String id)
+  async {
+
+    try{
+      var request;
+
+        request=http.Request('GET', Uri.parse(deviceDetailUri+id));
+
+
+
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        // print(await response.stream.bytesToString());
+        deviceDetailsController  =   deviceDetailFromJson(await response.stream.bytesToString());
+
+      }
+      else {
+        print(response.reasonPhrase);
+      }
+      return response.statusCode;
+    }on SocketException catch (e) {
+      debugPrint(e.toString());
+      debugPrint('Internet connection is down.');
+      return 10;
+    } on Exception catch (e) {
+      debugPrint('sent data api exception: $e');
+      return 0;
+    }
+
+
+
+
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:veevo_connect/Controllers/Cubits/DashboardCubits/HomeCubits/home_view_device_page_view_cubit.dart';
 import 'package:veevo_connect/Controllers/Cubits/DashboardCubits/bottom_navigation_cubit.dart';
+import 'package:veevo_connect/Controllers/Repository/repo.dart';
 import 'package:veevo_connect/Controllers/app_controllers.dart';
 import 'package:veevo_connect/Views/DashboardScreens/HomeScreens/add_device_screen.dart';
 import 'package:veevo_connect/Views/DashboardScreens/HomeScreens/add_new_group_screen.dart';
@@ -62,7 +63,7 @@ class DashboardPageViewScreen extends StatelessWidget {
                   const MapScreen(), //1
                   const SettingScreen(), //2
                   const LastScreen(), //3
-                  ViewDevicePageViewScreen(viewDeviceTopButtons: viewDeviceTopButtonState,), //4
+                  ViewDevicePageViewScreen(viewDeviceTopButtons: viewDeviceTopButtonState, id: Repository.deviceIdToDetails,), //4
                   const AddDeviceScreen(), //5
                   const PlaceDetailScreen(), //6
                   const GroupDetailsScreen(), //7

@@ -3,15 +3,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:veevo_connect/Controllers/Cubits/DashboardCubits/HomeCubits/home_view_device_page_view_cubit.dart';
+import 'package:veevo_connect/Controllers/Cubits/DevicesCubit/DeviceDetailsCubit/device_details_cubit.dart';
 import 'package:veevo_connect/Controllers/app_controllers.dart';
 import 'package:veevo_connect/Views/DashboardScreens/HomeScreens/device_details_screen.dart';
 import 'package:veevo_connect/Views/DashboardScreens/HomeScreens/device_management_screen.dart';
 import 'package:veevo_connect/Views/Utils/Data/app_colors.dart';
 
-class ViewDevicePageViewScreen extends StatelessWidget {
+class ViewDevicePageViewScreen extends StatefulWidget {
   final int? viewDeviceTopButtons;
-  const ViewDevicePageViewScreen({super.key,required this.viewDeviceTopButtons});
+  final String id;
+   const ViewDevicePageViewScreen({super.key,required this.viewDeviceTopButtons,required this.id});
 
+  @override
+  State<ViewDevicePageViewScreen> createState() => _ViewDevicePageViewScreenState();
+}
+
+class _ViewDevicePageViewScreenState extends State<ViewDevicePageViewScreen> {
+  @override
+  void initState() {
+    context.read<DeviceDetailsCubit>().loadDeviceDetail(widget.id);
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -106,7 +119,7 @@ class ViewDevicePageViewScreen extends StatelessWidget {
                         child: Container(
                           height: 26.sp,
                           decoration: BoxDecoration(
-                            color: viewDeviceTopButtons == 0
+                            color: widget.viewDeviceTopButtons == 0
                                 ? AppColors.themeColorOne
                                 : AppColors.greyEleventh,
                             borderRadius: BorderRadius.circular(10.sp),
@@ -116,7 +129,7 @@ class ViewDevicePageViewScreen extends StatelessWidget {
                             child: Text(
                               'Device details',
                               style: GoogleFonts.poppins(
-                                color: viewDeviceTopButtons == 0
+                                color: widget.viewDeviceTopButtons == 0
                                     ? AppColors.white
                                     : AppColors.greyTwelve,
                                 fontSize: 11.sp,
@@ -146,7 +159,7 @@ class ViewDevicePageViewScreen extends StatelessWidget {
                         child: Container(
                           height: 26.sp,
                           decoration: BoxDecoration(
-                            color: viewDeviceTopButtons == 1
+                            color: widget.viewDeviceTopButtons == 1
                                 ? AppColors.themeColorOne
                                 : AppColors.greyEleventh,
                             borderRadius: BorderRadius.circular(10.sp),
@@ -156,7 +169,7 @@ class ViewDevicePageViewScreen extends StatelessWidget {
                             child: Text(
                               'Device management',
                               style: GoogleFonts.poppins(
-                                color: viewDeviceTopButtons == 1
+                                color: widget.viewDeviceTopButtons == 1
                                     ? AppColors.white
                                     : AppColors.greyTwelve,
                                 fontSize: 11.sp,
